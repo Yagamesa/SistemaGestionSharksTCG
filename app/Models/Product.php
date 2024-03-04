@@ -21,6 +21,7 @@ class Product extends Model
         'precio_compra',
         'precio_venta',
         'precio_preventa',
+        'precio_sharkcoins'
     ];
 
     protected $table = 'producto';
@@ -28,13 +29,14 @@ class Product extends Model
     // Relación muchos a uno con Category
     public function category()
     {
-        return $this->belongsTo(Category::class, 'id_categoria', 'id_categoria');
+        return $this->belongsTo(Category::class);
     }
 
     // Relación muchos a muchos con Sale
     public function sales()
     {
-        return $this->belongsToMany(Sale::class, 'producto_venta');
+        return $this->belongsToMany(Sale::class, 'producto_venta', 'id_producto', 'id_venta');
     }
+    
 }
 

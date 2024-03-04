@@ -12,25 +12,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PurchaseSupplier extends Model
 {
+    use HasFactory;
+    use SoftDeletes;
     protected $table = 'compra_proveedor';
 
     protected $fillable = [
-        'id_compra',
-        'id_proveedor',
         'nombre_producto',
         'cantidad',
         'precio_unitario',
         'total',
+        'tipoDePago',
+        'egreso'
+
         // Agrega otros campos si los hay
     ];
 
-    // Relación muchos a uno con Purchase
+    #compra
     public function purchase(): BelongsTo
     {
         return $this->belongsTo(Purchase::class, 'id_compra');
     }
-
-    // Relación muchos a uno con Supplier
+   # proveedor
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'id_proveedor');

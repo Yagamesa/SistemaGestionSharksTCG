@@ -7,6 +7,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class PreSale extends Model
 {
@@ -18,22 +20,25 @@ class PreSale extends Model
         'cantidad',
         'precio_unitario',
         'total',
-        'estado',
+        'saldo',
         'fecha_pago',
+        'tipoDePago',
+        'ingreso',
         'id_usuario',
         'id_cliente',
     ];
 
     protected $table = 'preventa';
 
-    // Relación muchos a uno con User
-    public function user()
+
+    // Relación BelongsTo con User
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }
 
-    // Relación muchos a uno con Client
-    public function client()
+    // Relación BelongsTo con Client
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'id_cliente');
     }

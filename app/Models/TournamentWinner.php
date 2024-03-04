@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 class ProductSale extends Model
 {
+
+    use HasFactory;
+    use SoftDeletes;
     protected $table = 'producto_venta';
 
     // Puedes agregar otros campos si los necesitas

@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
 class Purchase extends Model
 {
     use HasFactory;
@@ -17,23 +16,19 @@ class Purchase extends Model
 
     protected $fillable = [
         'id_usuario',
-        'fecha_compra',
-        // Agrega otros campos específicos de Purchase aquí
+        'fecha_compra'
     ];
 
     protected $table = 'compra';
 
-    // Relación muchos a uno con User
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }
-
-    // Relación muchos a muchos con Supplier
-    public function suppliers(): BelongsToMany
+    
+    public function suppliers()
     {
-        return $this->belongsToMany(Supplier::class, 'compra_proveedor');
+        return $this->belongsToMany(Supplier::class, 'compra_proveedor', 'id_compra', 'id_proveedor')
+            ->withPivot(['nombre_producto', 'cantidad', 'precio_unitario', 'total', 'tipoDePago', 'egreso']);
     }
-
-  
 }

@@ -6,6 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 
 class Sale extends Model
 {
@@ -21,21 +24,23 @@ class Sale extends Model
 
     protected $table = 'venta';
 
-    // Relación muchos a muchos con Product
-    public function products()
-    {
-        return $this->belongsToMany(Product::class, 'producto_venta');
-    }
-
-    // Relación muchos a uno con Cliente
-    public function client()
-    {
-        return $this->belongsTo(Client::class, 'id_cliente', 'id_cliente');
-    }
-
-    // Relación muchos a uno con Usuario (User)
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id_usuario', 'id');
-    }
+       // Relación BelongsToMany con Product
+       public function products(): BelongsToMany
+       {
+           return $this->belongsToMany(Product::class, 'producto_venta', 'id_venta', 'id_producto')
+               ->withPivot(['cantidad', 'total', 'descuento', 'saldoPagado', 'tipoDePago', 'ingreso'])
+               ->withTimestamps();
+       }
+   
+       // Relación BelongsTo con Client
+       public function client(): BelongsTo
+       {
+           return $this->belongsTo(Client::class, 'id_cliente');
+       }
+   
+       // Relación BelongsTo con User
+       public function user(): BelongsTo
+       {
+           return $this->belongsTo(User::class, 'id_usuario');
+       }
 }

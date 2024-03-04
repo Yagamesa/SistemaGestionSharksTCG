@@ -12,25 +12,28 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TournamentClient extends Model
 {
+
+    use HasFactory;
+    use SoftDeletes;
     protected $table = 'torneo_cliente';
 
     protected $fillable = [
-        'id_torneo',
-        'id_cliente',
         'pago_torneo',
         'fecha_pago',
-        // Agrega otros campos si los hay
+        'tipoDePago',
+        'ingreso'
+        
     ];
 
-    // Relación muchos a uno con Tournament
-    public function tournament(): BelongsTo
-    {
-        return $this->belongsTo(Tournament::class, 'id_torneo');
-    }
+// Relación muchos a uno con Tournament
+public function tournament(): BelongsTo
+{
+    return $this->belongsTo(Tournament::class, 'id_torneo');
+}
 
-    // Relación muchos a uno con Client
-    public function client(): BelongsTo
-    {
-        return $this->belongsTo(Client::class, 'id_cliente');
-    }
+// Relación muchos a uno con Client
+public function client(): BelongsTo
+{
+    return $this->belongsTo(Client::class, 'id_cliente');
+}
 }

@@ -10,7 +10,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductSale extends Pivot
 {
+
+    use HasFactory;
+    use SoftDeletes;
     protected $table = 'producto_venta';
+    public $timestamps = true;
+    protected $fillable = [
+        'cantidad',
+        'precio_unitario',
+        'total',
+        'descuento',
+        'saldoPagado',
+        'tipoDePago',
+        'ingreso',
+    ];
 
     // Puedes agregar otros campos si los necesitas
 

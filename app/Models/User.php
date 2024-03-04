@@ -19,6 +19,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $table = 'users';
+    
     protected $fillable = [
         'name',
         'rol',
@@ -44,13 +45,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    public function events(){
-      #  return $this->belongsToMany(Event::class,'event_user');
-    }
-public function eventos()
+// User.php
+public function purchases()
 {
-    #return $this->hasMany(Event::class);
+    return $this->hasMany(Purchase::class, 'id_usuario');
+}
+
+public function presales()
+{
+    return $this->hasMany(PreSale::class, 'id_usuario');
+}
+
+public function sales()
+{
+    return $this->hasMany(Sale::class, 'id_usuario');
 }
 
     

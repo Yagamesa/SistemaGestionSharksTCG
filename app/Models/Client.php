@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Client extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'nombre',
@@ -17,6 +18,8 @@ class Client extends Model
         'codigo_yugioh',
         'codigo_digimon',
         'codigo_onepiece',
+        'sharkCoins',
+        'deuda'
     ];
 
     protected $table = 'cliente';
@@ -24,8 +27,21 @@ class Client extends Model
     // Relación uno a muchos con Venta
     public function sales()
     {
-        return $this->hasMany(Sale::class, 'id_cliente', 'id_cliente');
+        return $this->hasMany(Sale::class);
     }
 
-    
+    #Uno a muchos de PreSale
+    public function preSales()
+{
+    return $this->hasMany(PreSale::class, 'id_cliente');
+}
+
+   #Muchos a muchos con Torneo
+public function tournaments()
+{
+    return $this->belongsToMany(Tournament::class, 'torneo_cliente', 'id_cliente', 'id_torneo')
+        ->withPivot(['pago_torneo', 'fecha_pago', 'tipoDePago', 'ingreso'])
+        ->withTimestamps();
+}
+
 }
