@@ -202,13 +202,13 @@ Schema::create('proveedor', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_usuario');
            
-            $table->foreign('id_usuario')->references('id')->on('users'); // Referencia a la tabla users
+            $table->foreign('id_usuario')->references('id')->on('users'); 
             $table->date('fecha_compra');
             $table->softDeletes();
             $table->timestamps();
         });
 
-        // Resto de las tablas y relaciones aquí ...
+      
           // Tabla cliente
           Schema::create('cliente', function (Blueprint $table) {
             $table->id();
@@ -234,7 +234,7 @@ Schema::create('proveedor', function (Blueprint $table) {
             $table->timestamps();
         });
 
-        // Resto de las tablas y relaciones aquí ...
+       
 
         // Tabla preventa
         Schema::create('preventa', function (Blueprint $table) {
@@ -327,7 +327,7 @@ Schema::create('proveedor', function (Blueprint $table) {
      */
     public function down()
     {
-        // Eliminar tablas en orden inverso para evitar restricciones de clave externa
+        
         Schema::dropIfExists('producto_venta');
         Schema::dropIfExists('compra_proveedor');
         Schema::dropIfExists('torneo_cliente');
@@ -372,6 +372,7 @@ class Product extends Model
         'precio_compra',
         'precio_venta',
         'precio_preventa',
+        'precio_sharkcoins'
     ];
 
     protected $table = 'producto';
@@ -379,15 +380,17 @@ class Product extends Model
     // Relación muchos a uno con Category
     public function category()
     {
-        return $this->belongsTo(Category::class, 'id_categoria', 'id_categoria');
+        return $this->belongsTo(Category::class);
     }
 
     // Relación muchos a muchos con Sale
     public function sales()
     {
-        return $this->belongsToMany(Sale::class, 'producto_venta');
+        return $this->belongsToMany(Sale::class, 'producto_venta', 'id_producto', 'id_venta');
     }
+    
 }
+
 ```
 ### Model Sale
 ```bash
@@ -399,6 +402,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 
 class Sale extends Model
 {
@@ -414,23 +420,25 @@ class Sale extends Model
 
     protected $table = 'venta';
 
-    // Relación muchos a muchos con Product
-    public function products()
-    {
-        return $this->belongsToMany(Product::class, 'producto_venta');
-    }
-
-    // Relación muchos a uno con Cliente
-    public function client()
-    {
-        return $this->belongsTo(Client::class, 'id_cliente', 'id_cliente');
-    }
-
-    // Relación muchos a uno con Usuario (User)
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id_usuario', 'id');
-    }
+       // Relación BelongsToMany con Product
+       public function products(): BelongsToMany
+       {
+           return $this->belongsToMany(Product::class, 'producto_venta', 'id_venta', 'id_producto')
+               ->withPivot(['cantidad', 'total', 'descuento', 'saldoPagado', 'tipoDePago', 'ingreso'])
+               ->withTimestamps();
+       }
+   
+       // Relación BelongsTo con Client
+       public function client(): BelongsTo
+       {
+           return $this->belongsTo(Client::class, 'id_cliente');
+       }
+   
+       // Relación BelongsTo con User
+       public function user(): BelongsTo
+       {
+           return $this->belongsTo(User::class, 'id_usuario');
+       }
 }
 
 
@@ -449,7 +457,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductSale extends Pivot
 {
+
+    use HasFactory;
+    use SoftDeletes;
     protected $table = 'producto_venta';
+    public $timestamps = true;
+    protected $fillable = [
+        'cantidad',
+        'precio_unitario',
+        'total',
+        'descuento',
+        'saldoPagado',
+        'tipoDePago',
+        'ingreso',
+    ];
 
     // Puedes agregar otros campos si los necesitas
 
@@ -465,6 +486,7 @@ class ProductSale extends Pivot
         return $this->belongsTo(Sale::class, 'id_venta');
     }
 }
+
 
 ```
 
@@ -919,7 +941,6 @@ Route::prefix('presales')->group(function () {
     Route::get('/', [PreSaleController::class, 'index']);
     Route::get('{id}', [PreSaleController::class, 'show']);
     Route::get('client/{clientId}', [PreSaleController::class, 'findByClientId']);
-    Route::get('product/{productName}', [PreSaleController::class, 'findByProductName']);
     Route::post('/', [PreSaleController::class, 'store']);
     Route::put('{id}', [PreSaleController::class, 'update']);
     Route::delete('{id}', [PreSaleController::class, 'destroy']);
